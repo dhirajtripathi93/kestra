@@ -53,6 +53,7 @@ services:
       - "8081:8081"
     network_mode: host
     image: kestra/kestra:v1.1
+    env_file: .env
     pull_policy: always
     user: "root"
     command: server standalone
@@ -61,7 +62,9 @@ services:
       - kestra_data:/app/storage
       - /var/run/docker.sock:/var/run/docker.sock
       - kestra_tmp:/tmp/kestra-wd
+      - ./gcp-key.json:/app/gcp-key.json:ro
     environment:
+      GOOGLE_APPLICATION_CREDENTIALS: /app/gcp-key.json
       KESTRA_CONFIGURATION: |
         datasources:
           postgres:
@@ -85,7 +88,7 @@ services:
           tasks:
             tmpDir:
               path: /tmp/kestra-wd/tmp
-   
+      MICRONAUT_SERVER_HOST: "0.0.0.0"
     depends_on:
       kestra_postgres:
         condition: service_healthy
